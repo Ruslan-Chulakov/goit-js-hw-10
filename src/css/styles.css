@@ -50,7 +50,7 @@ body {
 }
 
 .flag {
-  max-height: 250px
+  max-height: 160px;
 }
 
 .country-info__text-content {

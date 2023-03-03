@@ -1,14 +1,9 @@
 import './css/styles.css';
 import debounce from 'lodash.debounce';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import {fetchCountries} from './fetchCountries';
 
 const DEBOUNCE_DELAY = 300;
-const FILTER_PROPERTY = `?fields=name,
-capital,
-population,
-flags,
-languages
-`;
 
 const inputRef = document.querySelector('#search-box');
 const countryListRef = document.querySelector('.country-list');
@@ -18,23 +13,12 @@ inputRef.addEventListener('input', debounce(onInputHandle, DEBOUNCE_DELAY));
 
 function onInputHandle(e) {
     clearMurkup();
-    const inputValue = e.target.value;
-    if (inputValue === '') {
-        return
+    const inputValue = e.target.value.trim();
+    if (inputValue) {        
+        fetchCountries(inputValue)
+        .then(addMurkup)
+        .catch(error => Notify.failure("Oops, there is no country with that name"));
     };
-    fetchCountries(inputValue);
-};
-
-function fetchCountries(name) {
-    fetch(`https://restcountries.com/v3.1/name/${name}${FILTER_PROPERTY}`) 
-    .then(responce => {
-        if(!responce.ok){
-            throw new Error(responce.status)
-        }
-        return responce.json()
-    })
-    .then(data => addMurkup(data)) 
-    .catch(error => Notify.failure("Oops, there is no country with that name"))
 };
 
 function addMurkup(data) {
